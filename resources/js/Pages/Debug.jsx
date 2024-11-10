@@ -25,13 +25,12 @@ const DebugCard = ({ event }) => {
 
     return (
         <>
-            <div key={event.email} className='grid grid-cols-4 cursor-pointer items-center' onClick={() => setActive((previous) => !previous)}>
-                <div className="whitespace-nowrap px-3 py-4 text-sm w-32">
-                    <ActivePill key={event.event} active={true} label={getEventType(event.event)?.label} />
+            <div key={event.email} className='grid grid-cols-5 cursor-pointer items-center' onClick={() => setActive((previous) => !previous)}>
+                <div className="whitespace-nowrap px-3 py-4 text-sm col-span-1">
+                    <ActivePill key={event.name} active={true} label={getEventType(event.name)?.label} />
                 </div>
-                <p className="whitespace-nowrap px-3 py-4 text-sm">{event.channel}</p>
-                <p className="whitespace-nowrap px-3 py-4 text-sm">{event.user_id}</p>
-                <p className="whitespace-nowrap px-3 py-4 text-sm">{event.pusher_created_at}</p>
+                <p className="whitespace-nowrap px-3 py-4 text-sm col-span-3">{event.channel}</p>
+                <p className="whitespace-nowrap px-3 py-4 text-sm col-span-1">{event.pusher_created_at}</p>
             </div>
             {active && <EventInfo event={event} />}
         </>
@@ -40,18 +39,19 @@ const DebugCard = ({ event }) => {
 
 
 export default function Debug(props) {
-    const { app } = props;
+    const { app, pusherConfig } = props;
 
     const [events, setEvents] = useState([]);
     const [pauseEvents, setPauseEvents] = useState(false);
     const [showAddDebuggingWebhookModal, setShowAddDebuggingWebhookModal] = useState(false);
 
     useEffect(() => {
-        const pusher = new Pusher('app-key', {
-            cluster: 'eu',
-            wsHost: '127.0.0.1',
-            wsPort: 6001,
-            forceTLS: false,
+        const pusher = new Pusher(pusherConfig.appKey, {
+            cluster: pusherConfig.cluster,
+            wsHost: pusherConfig.host,
+            wsPort: pusherConfig.port,
+            wssPort: pusherConfig.port,
+            forceTLS: pusherConfig.forceTLS,
             encrypted: true,
             enabledTransports: ['ws', 'wss'],
         });
@@ -122,17 +122,14 @@ export default function Debug(props) {
                             <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
                                 <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
                                 <div className="min-w-full divide-y divide-gray-300">
-                                    <div className="grid grid-cols-4 bg-gray-50">
-                                        <div className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                                    <div className="grid grid-cols-5 bg-gray-50">
+                                        <div className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 col-span-1">
                                             Event Type
                                         </div>
-                                        <div className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                        <div className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 col-span-3">
                                             Channel
                                         </div>
-                                        <div className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                                            User ID
-                                        </div>
-                                        <div className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                        <div className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 col-span-1">
                                             Created At
                                         </div>
                                     </div>

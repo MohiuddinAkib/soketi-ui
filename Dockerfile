@@ -21,7 +21,6 @@ RUN cd /src && composer install --no-dev --no-scripts
 FROM node:18 as modules
 
 ADD /package.json /src/package.json
-ADD /package-lock.json /src/package-lock.json
 ADD /yarn.lock /src/yarn.lock
 
 RUN cd /src && yarn
@@ -29,7 +28,6 @@ RUN cd /src && yarn
 FROM node:18 as build
 
 ADD /package.json /src/package.json
-ADD /package-lock.json /src/package-lock.json
 ADD /yarn.lock /src/yarn.lock
 
 COPY --from=modules /src/node_modules /src/node_modules
@@ -44,6 +42,8 @@ ADD /vite.config.mjs /src/vite.config.mjs
 RUN cd /src && yarn build
 
 FROM jkaninda/nginx-php-fpm:8.2
+
+ADD /nginx.conf /var/www/html/conf/nginx/nginx-site.conf
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
